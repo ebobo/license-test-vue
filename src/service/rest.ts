@@ -20,3 +20,26 @@ http.interceptors.response.use(
     throw error;
   }
 );
+
+export interface ASConfigFile {
+  name: string;
+  contentType: string;
+}
+
+export interface CongfigUploadResponse {
+  ID: number;
+}
+
+export async function uploadASConfig(
+  data: FormData
+): Promise<CongfigUploadResponse> {
+  return http
+    .post<CongfigUploadResponse>(`/asconfig/upload`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    .then((response) => {
+      return response.data;
+    });
+}
