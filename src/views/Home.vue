@@ -11,20 +11,20 @@
           @click:clear="clearSelection"
         ></v-file-input>
       </v-col>
-      <v-col cols="1" class="upload-btn" justify="center">
-        <v-btn @click="uploadFile">upload</v-btn>
-      </v-col>
     </v-row>
 
     <h3 class="ma-4 primary--text">System :</h3>
 
     <v-row justify="center">
-      <v-col cols="8">
+      <v-col cols="7">
         <v-text-field
           prepend-icon="mdi-barcode-scan"
           v-model="snumber"
           label="Serial Number"
         ></v-text-field>
+      </v-col>
+      <v-col cols="1" class="upload-btn" justify="center">
+        <v-btn @click="uploadFile">upload config</v-btn>
       </v-col>
     </v-row>
     <h3 class="ma-4 primary--text">Features :</h3>
@@ -41,10 +41,13 @@
       <v-col cols="2">
         <v-checkbox v-model="analogValue" label="Analog Values"></v-checkbox>
       </v-col>
-    </v-row>
-    <v-row justify="center">
-      <v-col cols="2">
-        <v-btn color="success" @click="send">Get License-Key</v-btn>
+      <v-col cols="1">
+        <v-btn class="mt-3" color="amber" @click="clearSelection">RESET</v-btn>
+      </v-col>
+      <v-col cols="1">
+        <v-btn class="mt-3" color="success" @click="send"
+          >Get License-Key</v-btn
+        >
       </v-col>
     </v-row>
   </v-container>
@@ -92,6 +95,10 @@ export default Vue.extend({
 
     clearSelection() {
       this.chosenFile = null;
+      this.selfVerify = false;
+      this.coverDetection = false;
+      this.analogValue = false;
+      this.snumber = '343647193632373121003F00';
     },
   },
 });
