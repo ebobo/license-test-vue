@@ -45,7 +45,7 @@
         <v-btn class="mt-3" color="amber" @click="clearSelection">RESET</v-btn>
       </v-col>
       <v-col cols="1">
-        <v-btn class="mt-3" color="success" @click="send"
+        <v-btn class="mt-3" color="success" :disabled="canSend" @click="send"
           >Get License-Key</v-btn
         >
       </v-col>
@@ -65,6 +65,7 @@ export default Vue.extend({
     selfVerify: boolean;
     coverDetection: boolean;
     analogValue: boolean;
+    canSend: boolean;
   } {
     return {
       chosenFile: null,
@@ -72,6 +73,7 @@ export default Vue.extend({
       selfVerify: false,
       coverDetection: false,
       analogValue: false,
+      canSend: true,
     };
   },
 
@@ -82,6 +84,7 @@ export default Vue.extend({
       }
       let formData = new FormData();
       formData.append('config', this.chosenFile);
+      formData.append('system', this.snumber);
 
       uploadASConfig(formData)
         .then((response) => {
@@ -99,6 +102,7 @@ export default Vue.extend({
       this.coverDetection = false;
       this.analogValue = false;
       this.snumber = '343647193632373121003F00';
+      this.canSend = false;
     },
   },
 });
