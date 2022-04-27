@@ -96,14 +96,17 @@
       <v-col cols="2">
         <v-checkbox v-model="analogValue" label="Analog Values"></v-checkbox>
       </v-col>
-      <v-col cols="1">
+      <v-col cols="2">
         <v-btn class="mt-3" color="amber" @click="clearSelection">RESET</v-btn>
       </v-col>
-      <v-col cols="1">
+    </v-row>
+
+    <v-row justify="center">
+      <v-col cols="2">
         <v-btn
           class="mt-3"
           color="success"
-          :disabled="canSend"
+          :disabled="!canSend"
           @click="getLicensedConfig"
           >Get License-Key</v-btn
         >
@@ -117,8 +120,11 @@ import Vue from 'vue';
 import {
   CreateKeyRequest,
   CreateKeyResponse,
+  SignAutroSafeLicenseRequest,
+  SignAutroSafeLicenseResponse,
   createKeyPair,
   uploadASConfig,
+  signAutroSafeLicense,
 } from '../service/rest';
 import { makeSN } from '../utility/tools';
 
@@ -133,6 +139,7 @@ export default Vue.extend({
     coverDetection: boolean;
     analogValue: boolean;
     canSend: boolean;
+    systemID: string;
   } {
     return {
       keyID: '',
@@ -143,6 +150,7 @@ export default Vue.extend({
       coverDetection: false,
       analogValue: false,
       canSend: true,
+      systemID: '',
     };
   },
 
@@ -177,7 +185,8 @@ export default Vue.extend({
 
       uploadASConfig(formData)
         .then((response) => {
-          console.log(response);
+          this.systemID = response.systemId;
+          console.log(this.systemID);
         })
         .catch((error) => {
           console.log(error);
@@ -202,15 +211,28 @@ export default Vue.extend({
     },
 
     getLicensedConfig() {
-      console.log('getLicensedConfig');
+      const data: SignAutroSafeLicenseRequest = {
+        keyId: this.keyID,
+        systemId: this.systemID,
+      };
+      signAutroSafeLicense(data)
+        .then((response) => this.downloadConfig(response))
+        .catch((error) => {
+          console.log(error);
+        });
     },
+
+    downloadConfig(res: SignAutroSafeLicenseResponse) {
+      console.log(res.downloadLink);
+    },
+
     clearSelection() {
       this.chosenFile = null;
       this.selfVerify = false;
       this.coverDetection = false;
       this.analogValue = false;
       this.snumbers = ['343647193632373121003F00'];
-      this.canSend = false;
+      this.canSend = true;
     },
   },
 });

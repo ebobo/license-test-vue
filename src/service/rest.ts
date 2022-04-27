@@ -34,13 +34,22 @@ export interface CreateKeyResponse {
   retired: string;
 }
 
+export interface SignAutroSafeLicenseRequest {
+  keyId: string;
+  systemId: string;
+}
+
+export interface SignAutroSafeLicenseResponse {
+  downloadLink: string;
+}
+
 export interface ASConfigFile {
   name: string;
   contentType: string;
 }
 
 export interface CongfigUploadResponse {
-  ID: number;
+  systemId: string;
 }
 
 export async function uploadASConfig(
@@ -53,6 +62,7 @@ export async function uploadASConfig(
       },
     })
     .then((response) => {
+      console.log(response.data);
       return response.data;
     });
 }
@@ -62,6 +72,21 @@ export async function createKeyPair(
 ): Promise<CreateKeyResponse> {
   return http
     .post<CreateKeyResponse>(`/keys`, data, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then((response) => {
+      console.log(response.data);
+      return response.data;
+    });
+}
+
+export async function signAutroSafeLicense(
+  data: SignAutroSafeLicenseRequest
+): Promise<SignAutroSafeLicenseResponse> {
+  return http
+    .post<SignAutroSafeLicenseResponse>(`/autrosafe/license`, data, {
       headers: {
         'Content-Type': 'application/json',
       },
