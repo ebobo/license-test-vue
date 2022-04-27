@@ -1,5 +1,30 @@
 <template>
   <v-container>
+    <h3 class="ma-4 primary--text">Key-Pair :</h3>
+    <v-row justify="center">
+      <v-col cols="2" class="row-btn" justify="center">
+        <v-btn color="success" :disabled="keyID === ''" @click="getKey"
+          >get me a key</v-btn
+        >
+      </v-col>
+      <v-col cols="3" class="row-btn" justify="center">
+        <v-text-field
+          prepend-icon="mdi-key-plus"
+          v-model="keyID"
+          label="Key ID"
+        ></v-text-field>
+      </v-col>
+    </v-row>
+    <v-row justify="center">
+      <v-col cols="6" class="row-btn" justify="center">
+        <v-text-field
+          readonly
+          prepend-icon="mdi-key-chain"
+          v-model="publicKey"
+          label="Publick Key"
+        ></v-text-field>
+      </v-col>
+    </v-row>
     <h3 class="ma-4 primary--text">Config :</h3>
     <v-row justify="center">
       <v-col cols="8">
@@ -89,12 +114,19 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { uploadASConfig } from '../service/rest';
+import {
+  CreateKeyRequest,
+  CreateKeyResponse,
+  createKeyPair,
+  uploadASConfig,
+} from '../service/rest';
 import { makeSN } from '../utility/tools';
 
 export default Vue.extend({
   name: 'Home',
   data(): {
+    keyID: string;
+    publicKey: string;
     chosenFile: File | null;
     snumbers: string[];
     selfVerify: boolean;
@@ -103,6 +135,8 @@ export default Vue.extend({
     canSend: boolean;
   } {
     return {
+      keyID: '',
+      publicKey: '',
       chosenFile: null,
       snumbers: ['343647193632373121003F00'],
       selfVerify: false,
@@ -113,6 +147,23 @@ export default Vue.extend({
   },
 
   methods: {
+    getKey() {
+      const data: CreateKeyRequest = {
+        id: this.keyID,
+        description: 'Autrosafe public key',
+      };
+      createKeyPair(data)
+        .then((response) => this.setKeyInfo(response))
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    setKeyInfo(res: CreateKeyResponse) {
+      this.keyID = res.keyId;
+      this.publicKey = res.key;
+    },
+
     uploadFile() {
       if (this.chosenFile === null) {
         return;
@@ -120,9 +171,9 @@ export default Vue.extend({
       let formData = new FormData();
       formData.append('config', this.chosenFile);
       formData.append('system', this.snumbers.toString());
-      formData.append('sv', this.selfVerify ? 'ture' : 'false');
-      formData.append('cd', this.coverDetection ? 'ture' : 'false');
-      formData.append('av', this.analogValue ? 'ture' : 'false');
+      formData.append('sv', this.selfVerify ? 'true' : 'false');
+      formData.append('cd', this.coverDetection ? 'true' : 'false');
+      formData.append('av', this.analogValue ? 'true' : 'false');
 
       uploadASConfig(formData)
         .then((response) => {
@@ -168,7 +219,13 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .upload-btn {
   display: flex;
-  margin-top: 20px;
+  margin-top: 15px;
+  align-items: center;
+}
+
+.row-btn {
+  display: flex;
+  margin-top: 0px;
   align-items: center;
 }
 </style>

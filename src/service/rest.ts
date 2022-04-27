@@ -21,6 +21,19 @@ http.interceptors.response.use(
   }
 );
 
+export interface CreateKeyRequest {
+  id: string;
+  description: string;
+}
+
+export interface CreateKeyResponse {
+  keyId: string;
+  description: string;
+  key: string;
+  created: string;
+  retired: string;
+}
+
 export interface ASConfigFile {
   name: string;
   contentType: string;
@@ -40,6 +53,21 @@ export async function uploadASConfig(
       },
     })
     .then((response) => {
+      return response.data;
+    });
+}
+
+export async function createKeyPair(
+  data: CreateKeyRequest
+): Promise<CreateKeyResponse> {
+  return http
+    .post<CreateKeyResponse>(`/keys`, data, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then((response) => {
+      console.log(response.data);
       return response.data;
     });
 }
