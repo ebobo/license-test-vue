@@ -1,9 +1,14 @@
 <template>
   <v-container>
-    <h3 class="ma-4 primary--text">Key-Pair :</h3>
+    <v-list-item-avatar class="ma-2" size="48" rounded="0">
+      <v-img src="@/assets/images/lock_icon.png"> </v-img>
+    </v-list-item-avatar>
     <v-row justify="center">
       <v-col cols="2" class="row-btn" justify="center">
-        <v-btn color="success" :disabled="keyID === ''" @click="getKey"
+        <v-btn
+          color="deep-orange lighten-1"
+          :disabled="keyID === ''"
+          @click="getKey"
           >get me a key</v-btn
         >
       </v-col>
@@ -25,7 +30,9 @@
         ></v-text-field>
       </v-col>
     </v-row>
-    <h3 class="ma-4 primary--text">Config :</h3>
+    <v-list-item-avatar class="ma-2" size="46" rounded="0">
+      <v-img src="@/assets/images/document_gear_icon_blue.png"> </v-img>
+    </v-list-item-avatar>
     <v-row justify="center">
       <v-col cols="8">
         <div class="blue--text mb-2">AS config file ( .bz2 )</div>
@@ -37,9 +44,19 @@
         ></v-file-input>
       </v-col>
     </v-row>
-
-    <h3 class="ma-4 primary--text">System :</h3>
-
+    <v-list-item-avatar class="ma-2" size="54" rounded="0">
+      <v-img src="@/assets/images/panel_icon.png"> </v-img>
+    </v-list-item-avatar>
+    <v-row justify="center">
+      <v-col cols="8">
+        <v-text-field
+          readonly
+          prepend-icon="mdi-card-account-details-outline"
+          v-model="systemID"
+          label="Sytem ID"
+        ></v-text-field>
+      </v-col>
+    </v-row>
     <v-row v-for="(psn, index) in snumbers" :key="index" justify="center">
       <v-col cols="8">
         <v-text-field
@@ -82,7 +99,9 @@
         <v-btn @click="uploadFile">upload config</v-btn>
       </v-col>
     </v-row>
-    <h3 class="mt-8 mr-4 mb-4 ml-4 primary--text">Features :</h3>
+    <v-list-item-avatar class="ma-2" size="48" rounded="0">
+      <v-img src="@/assets/images/checkbox_icon.png"> </v-img>
+    </v-list-item-avatar>
     <v-row justify="center">
       <v-col cols="2">
         <v-checkbox v-model="selfVerify" label="Self-Verify"></v-checkbox>
@@ -102,7 +121,7 @@
     </v-row>
 
     <v-row justify="center">
-      <v-col cols="2">
+      <v-col cols="4">
         <v-btn
           class="mt-3"
           color="success"
@@ -112,6 +131,17 @@
         >
       </v-col>
     </v-row>
+    <v-row v-for="(_, index) in licenseKeys" :key="index" justify="center">
+      <v-col cols="10">
+        <v-text-field
+          readonly
+          prepend-icon="mdi-file-sign"
+          v-model="licenseKeys[index]"
+          label="License Key"
+        ></v-text-field>
+      </v-col>
+    </v-row>
+    <v-row class="mb-2" justify="center"> </v-row>
   </v-container>
 </template>
 
@@ -140,6 +170,7 @@ export default Vue.extend({
     analogValue: boolean;
     canSend: boolean;
     systemID: string;
+    licenseKeys: string[];
   } {
     return {
       keyID: '',
@@ -151,6 +182,7 @@ export default Vue.extend({
       analogValue: false,
       canSend: true,
       systemID: '',
+      licenseKeys: [],
     };
   },
 
@@ -186,12 +218,10 @@ export default Vue.extend({
       uploadASConfig(formData)
         .then((response) => {
           this.systemID = response.systemId;
-          console.log(this.systemID);
         })
         .catch((error) => {
           console.log(error);
         });
-      this.clearSelection();
     },
 
     generatePSN() {
@@ -223,7 +253,9 @@ export default Vue.extend({
     },
 
     downloadConfig(res: SignAutroSafeLicenseResponse) {
-      console.log(res.downloadLink);
+      console.log(res.licenseKey);
+      this.licenseKeys = res.licenseKey.split(',');
+      console.log(this.licenseKeys);
     },
 
     clearSelection() {
@@ -233,6 +265,7 @@ export default Vue.extend({
       this.analogValue = false;
       this.snumbers = ['343647193632373121003F00'];
       this.canSend = true;
+      this.licenseKeys = [];
     },
   },
 });

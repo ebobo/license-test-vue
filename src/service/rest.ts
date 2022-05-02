@@ -40,7 +40,7 @@ export interface SignAutroSafeLicenseRequest {
 }
 
 export interface SignAutroSafeLicenseResponse {
-  downloadLink: string;
+  licenseKey: string;
 }
 
 export interface ASConfigFile {
