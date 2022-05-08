@@ -17,8 +17,8 @@
         <span class="mr-1">About</span>
         <v-icon>mdi-information-outline</v-icon>
       </v-btn>
+      <auth-nav />
     </v-app-bar>
-
     <v-main>
       <router-view />
     </v-main>
@@ -41,10 +41,11 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import AuthNav from '@/components/AuthNav.vue';
 
 export default Vue.extend({
   name: 'App',
-
+  components: { AuthNav },
   data: () => ({
     slogan: process.env.VUE_APP_SLOGAN,
   }),
