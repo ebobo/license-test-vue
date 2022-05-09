@@ -1,11 +1,8 @@
 <template>
-  <button
-    class="btn btn-danger btn-block"
-    v-if="$auth.isAuthenticated"
-    @click.prevent="logout"
-  >
-    Log Out
-  </button>
+  <v-btn text v-if="$auth.isAuthenticated" @click="logout">
+    <span class="mr-1">Log out</span>
+    <v-icon>mdi-logout-variant</v-icon>
+  </v-btn>
 </template>
 
 <script>

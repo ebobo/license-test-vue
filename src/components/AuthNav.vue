@@ -1,6 +1,6 @@
 <template>
   <div class="navbar-nav ml-auto">
-    <AuthenticationButton />
+    <authentication-button />
   </div>
 </template>
 

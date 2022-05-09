@@ -18,6 +18,13 @@
         <v-icon>mdi-information-outline</v-icon>
       </v-btn>
       <auth-nav />
+      <img
+        v-if="$auth.isAuthenticated"
+        :src="$auth.user.picture"
+        alt="User's profile picture"
+        class="nav-user-profile rounded-circle mr-1"
+        width="40"
+      />
     </v-app-bar>
     <v-main>
       <router-view />
