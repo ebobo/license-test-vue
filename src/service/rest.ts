@@ -39,8 +39,12 @@ export interface SignAutroSafeLicenseRequest {
   systemId: string;
 }
 
+export interface DownloadSignedAutroSafeConfigRequest {
+  systemId: string;
+}
+
 export interface SignAutroSafeLicenseResponse {
-  licenseKey: string;
+  systemId: string;
 }
 
 export interface ASConfigFile {
@@ -64,6 +68,27 @@ export async function uploadASConfig(
     .then((response) => {
       console.log(response.data);
       return response.data;
+    });
+}
+
+export async function downloadASConfig(systemId: string): Promise<any> {
+  let filename: string;
+  return http
+    .get(`/asconfig/download/${systemId}`, {
+      responseType: 'blob',
+    })
+    .then((response) => {
+      console.log(response);
+      filename = response.headers['content-type'].split(';')[1];
+      return response.data;
+    })
+    .then((data) => {
+      const downloadLink = window.document.createElement('a');
+      downloadLink.href = window.URL.createObjectURL(new Blob([data]));
+      downloadLink.download = filename;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
     });
 }
 

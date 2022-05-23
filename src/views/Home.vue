@@ -48,16 +48,7 @@
       <v-list-item-avatar class="ma-2" size="54" rounded="0">
         <v-img src="@/assets/images/panel_icon.png"> </v-img>
       </v-list-item-avatar>
-      <v-row justify="center">
-        <v-col cols="8">
-          <v-text-field
-            readonly
-            prepend-icon="mdi-card-account-details-outline"
-            v-model="systemID"
-            label="Sytem ID"
-          ></v-text-field>
-        </v-col>
-      </v-row>
+
       <v-row v-for="(psn, index) in snumbers" :key="index" justify="center">
         <v-col cols="8">
           <v-text-field
@@ -122,15 +113,34 @@
           >
         </v-col>
       </v-row>
-
       <v-row justify="center">
-        <v-col cols="4">
+        <v-col cols="8">
+          <v-text-field
+            readonly
+            prepend-icon="mdi-card-account-details-outline"
+            v-model="systemID"
+            label="Sytem ID"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row justify="center">
+        <v-col cols="3">
+          <v-btn
+            class="mt-3"
+            color="indigo darken-3"
+            dark
+            :disabled="!canSend"
+            @click="signSystemConfig"
+            >Sign System Config</v-btn
+          >
+        </v-col>
+        <v-col cols="3">
           <v-btn
             class="mt-3"
             color="success"
-            :disabled="!canSend"
-            @click="getLicensedConfig"
-            >Get License-Key</v-btn
+            :disabled="signedSystemID === ''"
+            @click="downloadConfig"
+            >Download Config</v-btn
           >
         </v-col>
       </v-row>
@@ -172,6 +182,7 @@ import {
   SignAutroSafeLicenseResponse,
   createKeyPair,
   uploadASConfig,
+  downloadASConfig,
   signAutroSafeLicense,
 } from '../service/rest';
 import { makeSN } from '../utility/tools';
@@ -189,6 +200,7 @@ export default Vue.extend({
     analogValue: boolean;
     canSend: boolean;
     systemID: string;
+    signedSystemID: string;
     licenseKeys: string[];
   } {
     return {
@@ -201,6 +213,7 @@ export default Vue.extend({
       analogValue: false,
       canSend: true,
       systemID: '',
+      signedSystemID: '6ba296b3-3624-41cc-81fb-753e8c55d495',
       licenseKeys: [],
     };
   },
@@ -259,22 +272,28 @@ export default Vue.extend({
       }
     },
 
-    getLicensedConfig() {
+    signSystemConfig() {
       const data: SignAutroSafeLicenseRequest = {
         keyId: this.keyID,
         systemId: this.systemID,
       };
       signAutroSafeLicense(data)
-        .then((response) => this.downloadConfig(response))
+        .then((response) => this.setSignedSystem(response))
         .catch((error) => {
           console.log(error);
         });
     },
 
-    downloadConfig(res: SignAutroSafeLicenseResponse) {
-      console.log(res.licenseKey);
-      this.licenseKeys = res.licenseKey.split(',');
-      console.log(this.licenseKeys);
+    downloadConfig() {
+      downloadASConfig(this.signedSystemID)
+        .then((response) => console.log('download'))
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    setSignedSystem(res: SignAutroSafeLicenseResponse) {
+      this.signedSystemID = res.systemId;
     },
 
     clearSelection() {
@@ -285,6 +304,8 @@ export default Vue.extend({
       this.snumbers = ['343647193632373121003F00'];
       this.canSend = true;
       this.licenseKeys = [];
+      this.systemID = '';
+      this.signedSystemID = '';
     },
   },
 });
