@@ -73,7 +73,7 @@
             readonly
             prepend-icon="mdi-key-chain"
             v-model="publicKey"
-            label="Publick Key (base64)"
+            label="Publick Key (Base64)"
           ></v-text-field>
         </v-col>
       </v-row>
