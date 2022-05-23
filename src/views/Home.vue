@@ -1,28 +1,74 @@
 <template>
   <v-container>
     <div v-if="$auth.isAuthenticated">
-      <v-list-item-avatar class="ma-2" size="48" rounded="0">
+      <v-list-item-avatar class="ma-1" size="48" rounded="0">
         <v-img src="@/assets/images/lock_icon.png"> </v-img>
       </v-list-item-avatar>
+
       <v-row justify="center">
-        <v-col cols="2" class="row-btn" justify="center">
-          <v-btn
-            color="deep-orange lighten-1"
-            :disabled="keyID === ''"
-            @click="getKey"
-            >get me a key</v-btn
-          >
-        </v-col>
-        <v-col cols="3" class="row-btn" justify="center">
-          <v-text-field
-            prepend-icon="mdi-key-plus"
-            v-model="keyID"
-            label="Key ID"
-          ></v-text-field>
+        <v-col cols="8" class="row-btn" justify="center">
+          <v-tabs fixed-tabs background-color="transparent">
+            <v-tab href="#create"> Create Key </v-tab>
+            <v-tab-item value="create">
+              <v-row class="mt-2" justify="center">
+                <v-col cols="4" class="row-btn" justify="center">
+                  <v-btn
+                    color="deep-orange lighten-1"
+                    :disabled="keyID === ''"
+                    @click="getKey"
+                    >create key</v-btn
+                  >
+                </v-col>
+                <v-col cols="4" class="row-btn" justify="center">
+                  <v-text-field
+                    prepend-icon="mdi-key-plus"
+                    v-model="keyID"
+                    label="Key ID"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-tab-item>
+            <v-tab href="#import"> Import Key </v-tab>
+            <v-tab-item value="import">
+              <v-row class="mt-2" justify="center">
+                <v-col cols="3" class="row-btn" justify="center">
+                  <v-text-field
+                    prepend-icon="mdi-key-plus"
+                    v-model="keyID"
+                    label="Key ID"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="3" justify="center">
+                  <v-file-input
+                    label="Private key file"
+                    v-model="privateKeyFile"
+                    @click:clear="clearSelection"
+                  ></v-file-input>
+                </v-col>
+                <v-col cols="3" justify="center">
+                  <v-file-input
+                    label="Public key file"
+                    v-model="publicKeyFile"
+                    @click:clear="clearSelection"
+                  ></v-file-input>
+                </v-col>
+                <v-col cols="3" class="row-btn" justify="center">
+                  <v-btn
+                    color="deep-orange lighten-1"
+                    :disabled="
+                      publicKeyFile === null && privateKeyFile === null
+                    "
+                    @click="uploadKeyPair"
+                    >import key</v-btn
+                  >
+                </v-col>
+              </v-row>
+            </v-tab-item>
+          </v-tabs>
         </v-col>
       </v-row>
-      <v-row justify="center">
-        <v-col cols="6" class="row-btn" justify="center">
+      <v-row class="mt-2" justify="center">
+        <v-col cols="8" class="row-btn" justify="center">
           <v-text-field
             readonly
             prepend-icon="mdi-key-chain"
@@ -182,6 +228,7 @@ import {
   SignAutroSafeLicenseResponse,
   createKeyPair,
   uploadASConfig,
+  uploadKeyPair,
   downloadASConfig,
   signAutroSafeLicense,
 } from '../service/rest';
@@ -194,6 +241,8 @@ export default Vue.extend({
     keyID: string;
     publicKey: string;
     chosenFile: File | null;
+    privateKeyFile: File | null;
+    publicKeyFile: File | null;
     snumbers: string[];
     selfVerify: boolean;
     coverDetection: boolean;
@@ -207,6 +256,8 @@ export default Vue.extend({
       keyID: '',
       publicKey: '',
       chosenFile: null,
+      privateKeyFile: null,
+      publicKeyFile: null,
       snumbers: ['343647193632373121003F00'],
       selfVerify: false,
       coverDetection: false,
@@ -225,6 +276,23 @@ export default Vue.extend({
         description: 'Autrosafe public key',
       };
       createKeyPair(data)
+        .then((response) => this.setKeyInfo(response))
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    uploadKeyPair() {
+      console.log('upload key');
+      if (this.privateKeyFile === null || this.publicKeyFile === null) {
+        return;
+      }
+      let formData = new FormData();
+      formData.append('private', this.privateKeyFile);
+      formData.append('public', this.publicKeyFile);
+      formData.append('id', this.keyID);
+
+      uploadKeyPair(formData)
         .then((response) => this.setKeyInfo(response))
         .catch((error) => {
           console.log(error);
@@ -298,6 +366,8 @@ export default Vue.extend({
 
     clearSelection() {
       this.chosenFile = null;
+      this.privateKeyFile = null;
+      this.publicKeyFile = null;
       this.selfVerify = false;
       this.coverDetection = false;
       this.analogValue = false;

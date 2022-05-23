@@ -6,12 +6,8 @@
       </div>
       <v-spacer></v-spacer>
       <v-btn :to="{ path: '/' }" text>
-        <span class="mr-1">Upload</span>
+        <span class="mr-1">Main</span>
         <v-icon>mdi-file-upload-outline</v-icon>
-      </v-btn>
-      <v-btn :to="{ path: '/download' }" text>
-        <span class="mr-1">Download</span>
-        <v-icon>mdi-file-download-outline</v-icon>
       </v-btn>
       <v-btn :to="{ path: '/about' }" text>
         <span class="mr-1">About</span>

@@ -56,6 +56,21 @@ export interface CongfigUploadResponse {
   systemId: string;
 }
 
+export async function uploadKeyPair(
+  data: FormData
+): Promise<CreateKeyResponse> {
+  return http
+    .post<CreateKeyResponse>(`/keys/upload`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    .then((response) => {
+      console.log(response.data);
+      return response.data;
+    });
+}
+
 export async function uploadASConfig(
   data: FormData
 ): Promise<CongfigUploadResponse> {
