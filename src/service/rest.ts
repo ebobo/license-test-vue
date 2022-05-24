@@ -27,7 +27,7 @@ export interface CreateKeyRequest {
 }
 
 export interface CreateKeyResponse {
-  keyId: string;
+  key_id: string;
   description: string;
   key: string;
   created: string;

@@ -56,7 +56,9 @@
                   <v-btn
                     color="deep-orange lighten-1"
                     :disabled="
-                      publicKeyFile === null && privateKeyFile === null
+                      publicKeyFile === null ||
+                      privateKeyFile === null ||
+                      keyID === ''
                     "
                     @click="uploadKeyPair"
                     >import key</v-btn
@@ -284,7 +286,11 @@ export default Vue.extend({
 
     uploadKeyPair() {
       console.log('upload key');
-      if (this.privateKeyFile === null || this.publicKeyFile === null) {
+      if (
+        this.keyID === '' ||
+        this.privateKeyFile === null ||
+        this.publicKeyFile === null
+      ) {
         return;
       }
       let formData = new FormData();
@@ -300,7 +306,7 @@ export default Vue.extend({
     },
 
     setKeyInfo(res: CreateKeyResponse) {
-      this.keyID = res.keyId;
+      this.keyID = res.key_id;
       this.publicKey = res.key;
     },
 
@@ -376,6 +382,7 @@ export default Vue.extend({
       this.licenseKeys = [];
       this.systemID = '';
       this.signedSystemID = '';
+      this.keyID = '';
     },
   },
 });
