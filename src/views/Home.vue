@@ -100,7 +100,6 @@
       <v-row v-for="(psn, index) in snumbers" :key="index" justify="center">
         <v-col cols="8">
           <v-text-field
-            readonly
             prepend-icon="mdi-barcode-scan"
             v-model="snumbers[index]"
             label="Serial Number"
@@ -260,13 +259,13 @@ export default Vue.extend({
       chosenFile: null,
       privateKeyFile: null,
       publicKeyFile: null,
-      snumbers: ['343647193632373121003F00'],
+      snumbers: ['00A7000730980000'],
       selfVerify: false,
       coverDetection: false,
       analogValue: false,
       canSend: true,
       systemID: '',
-      signedSystemID: '6ba296b3-3624-41cc-81fb-753e8c55d495',
+      signedSystemID: '',
       licenseKeys: [],
     };
   },
@@ -332,12 +331,12 @@ export default Vue.extend({
 
     generatePSN() {
       for (let i = 0; i < this.snumbers.length; i++) {
-        Vue.set(this.snumbers, i, makeSN(24));
+        Vue.set(this.snumbers, i, makeSN(16));
       }
     },
 
     addPSN() {
-      this.snumbers = [...this.snumbers, makeSN(24)];
+      this.snumbers = [...this.snumbers, makeSN(16)];
     },
 
     removePSN() {
@@ -374,10 +373,11 @@ export default Vue.extend({
       this.chosenFile = null;
       this.privateKeyFile = null;
       this.publicKeyFile = null;
+      this.publicKey = '';
       this.selfVerify = false;
       this.coverDetection = false;
       this.analogValue = false;
-      this.snumbers = ['343647193632373121003F00'];
+      this.snumbers = ['00A7000730980000'];
       this.canSend = true;
       this.licenseKeys = [];
       this.systemID = '';
