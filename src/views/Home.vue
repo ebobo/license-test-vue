@@ -9,7 +9,7 @@
         <v-col cols="8" class="row-btn" justify="center">
           <v-tabs fixed-tabs background-color="transparent">
             <v-tab href="#create"> Create Key </v-tab>
-            <v-tab-item value="create">
+            <v-tab-item class="tab-item" value="create">
               <v-row class="mt-2" justify="center">
                 <v-col cols="4" class="row-btn" justify="center">
                   <v-btn
@@ -29,7 +29,7 @@
               </v-row>
             </v-tab-item>
             <v-tab href="#import"> Import Key </v-tab>
-            <v-tab-item value="import">
+            <v-tab-item class="tab-item" value="import">
               <v-row class="mt-2" justify="center">
                 <v-col cols="3" class="row-btn" justify="center">
                   <v-text-field
@@ -66,6 +66,27 @@
                 </v-col>
               </v-row>
             </v-tab-item>
+            <v-tab href="#existing"> Existing Key </v-tab>
+            <v-tab-item class="tab-item" value="existing">
+              <v-row class="mt-2" justify="center">
+                <v-col cols="4" class="row-btn" justify="center">
+                  <v-text-field
+                    prepend-icon="mdi-key"
+                    v-model="keyID"
+                    label="Key ID"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="4" class="row-btn">
+                  <v-spacer />
+                  <v-btn
+                    color="deep-orange lighten-1"
+                    :disabled="keyID === ''"
+                    @click="useKey"
+                    >use key</v-btn
+                  >
+                </v-col>
+              </v-row>
+            </v-tab-item>
           </v-tabs>
         </v-col>
       </v-row>
@@ -79,9 +100,10 @@
           ></v-text-field>
         </v-col>
       </v-row>
-      <v-list-item-avatar class="ma-2" size="46" rounded="0">
-        <v-img src="@/assets/images/document_gear_icon_blue.png"> </v-img>
+      <v-list-item-avatar class="ma-2" size="54" rounded="0">
+        <v-img src="@/assets/images/panel_icon.png"> </v-img>
       </v-list-item-avatar>
+
       <v-row justify="center">
         <v-col cols="8">
           <div class="blue--text mb-2">AS config file ( .bz2 )</div>
@@ -93,16 +115,33 @@
           ></v-file-input>
         </v-col>
       </v-row>
-      <v-list-item-avatar class="ma-2" size="54" rounded="0">
-        <v-img src="@/assets/images/panel_icon.png"> </v-img>
-      </v-list-item-avatar>
+      <v-row justify="center">
+        <v-col cols="5">
+          <v-text-field
+            prepend-icon="mdi-card-account-details-outline"
+            v-model="systemID"
+            label="System ID"
+          ></v-text-field>
+        </v-col>
+
+        <v-col cols="2" class="row-btn">
+          <v-btn color="light-green darken-3" dark @click="generateSystemID"
+            >generate id</v-btn
+          >
+        </v-col>
+        <v-col cols="1" class="row-btn" justify="center">
+          <v-btn color="red" :disabled="systemID === ''" @click="deleteSystem"
+            >del</v-btn
+          >
+        </v-col>
+      </v-row>
 
       <v-row v-for="(psn, index) in snumbers" :key="index" justify="center">
         <v-col cols="8">
           <v-text-field
             prepend-icon="mdi-barcode-scan"
             v-model="snumbers[index]"
-            label="Serial Number"
+            label="Panel Serial Number"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -135,13 +174,21 @@
           <v-btn color="cyan" dark @click="generatePSN">generate psn</v-btn>
         </v-col>
         <v-col cols="2" class="upload-btn" justify="center">
-          <v-btn @click="uploadFile">upload config</v-btn>
+          <v-btn
+            :disabled="systemID === '' || chosenFile === null"
+            @click="uploadFile"
+            >upload config</v-btn
+          >
         </v-col>
       </v-row>
       <v-list-item-avatar class="ma-2" size="48" rounded="0">
-        <v-img src="@/assets/images/checkbox_icon.png"> </v-img>
+        <v-img src="@/assets/images/document_gear_icon_blue.png"> </v-img>
       </v-list-item-avatar>
+
       <v-row justify="center">
+        <v-col cols="2">
+          <v-checkbox v-model="demo" label="Demo"></v-checkbox>
+        </v-col>
         <v-col cols="2">
           <v-checkbox v-model="selfVerify" label="Self-Verify"></v-checkbox>
         </v-col>
@@ -154,29 +201,38 @@
         <v-col cols="2">
           <v-checkbox v-model="analogValue" label="Analog Values"></v-checkbox>
         </v-col>
+      </v-row>
+      <v-row justify="center">
+        <v-col cols="6">
+          <v-text-field
+            readonly
+            prepend-icon="mdi-card-account-details-outline"
+            v-model="featureSystemID"
+            label="System ID"
+          ></v-text-field>
+        </v-col>
+
+        <v-col cols="2" class="row-btn">
+          <v-btn
+            color="purple lighten-1"
+            :disabled="featureSystemID === ''"
+            @click="setSystemFeatures"
+            >Set features</v-btn
+          >
+        </v-col>
+      </v-row>
+
+      <v-row justify="center">
         <v-col cols="2">
           <v-btn class="mt-3" color="amber" @click="clearSelection"
             >RESET</v-btn
           >
         </v-col>
-      </v-row>
-      <v-row justify="center">
-        <v-col cols="8">
-          <v-text-field
-            readonly
-            prepend-icon="mdi-card-account-details-outline"
-            v-model="systemID"
-            label="Sytem ID"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-      <v-row justify="center">
         <v-col cols="3">
           <v-btn
             class="mt-3"
-            color="indigo darken-3"
-            dark
-            :disabled="!canSend"
+            color="indigo lighten-2"
+            :disabled="featureSystemID === ''"
             @click="signSystemConfig"
             >Sign System Config</v-btn
           >
@@ -187,7 +243,7 @@
             color="success"
             :disabled="signedSystemID === ''"
             @click="downloadConfig"
-            >Download Config</v-btn
+            >Download Signed Config</v-btn
           >
         </v-col>
       </v-row>
@@ -201,7 +257,7 @@
           ></v-text-field>
         </v-col>
       </v-row>
-      <v-row class="mb-2" justify="center"> </v-row>
+      <v-row class="mb-10" justify="center"> </v-row>
     </div>
     <div v-if="!$auth.isAuthenticated">
       <v-row class="mt-4" justify="center">
@@ -225,15 +281,20 @@ import Vue from 'vue';
 import {
   CreateKeyRequest,
   CreateKeyResponse,
+  SetAutroSafeFeaturesRequest,
   SignAutroSafeLicenseRequest,
   SignAutroSafeLicenseResponse,
   createKeyPair,
+  getPublicKey,
   uploadASConfig,
   uploadKeyPair,
+  updateAutroSafeFeatures,
   downloadASConfig,
   signAutroSafeLicense,
+  deleteAutroSafeSystem,
 } from '../service/rest';
-import { makeSN } from '../utility/tools';
+import { makeSN, generateUUID } from '@/utility/tools';
+import { EventBus, LicenseEvent } from '@/utility/eventBus';
 import { useAuth0 } from '@/auth/auth0-plugin';
 
 export default Vue.extend({
@@ -245,11 +306,13 @@ export default Vue.extend({
     privateKeyFile: File | null;
     publicKeyFile: File | null;
     snumbers: string[];
+    demo: boolean;
     selfVerify: boolean;
     coverDetection: boolean;
     analogValue: boolean;
     canSend: boolean;
     systemID: string;
+    featureSystemID: string;
     signedSystemID: string;
     licenseKeys: string[];
   } {
@@ -260,11 +323,13 @@ export default Vue.extend({
       privateKeyFile: null,
       publicKeyFile: null,
       snumbers: ['00A7000730980000'],
+      demo: false,
       selfVerify: false,
       coverDetection: false,
       analogValue: false,
       canSend: true,
       systemID: '',
+      featureSystemID: '',
       signedSystemID: '',
       licenseKeys: [],
     };
@@ -279,12 +344,27 @@ export default Vue.extend({
       createKeyPair(data)
         .then((response) => this.setKeyInfo(response))
         .catch((error) => {
+          EventBus.$emit(
+            LicenseEvent.SnackbarFail,
+            `Failed to create new key.`
+          );
+          console.log(error);
+        });
+    },
+
+    useKey() {
+      if (this.keyID === '') {
+        return;
+      }
+      getPublicKey(this.keyID)
+        .then((response) => this.setKeyInfo(response))
+        .catch((error) => {
+          EventBus.$emit(LicenseEvent.SnackbarFail, `Failed to retrieve key.`);
           console.log(error);
         });
     },
 
     uploadKeyPair() {
-      console.log('upload key');
       if (
         this.keyID === '' ||
         this.privateKeyFile === null ||
@@ -300,31 +380,37 @@ export default Vue.extend({
       uploadKeyPair(formData)
         .then((response) => this.setKeyInfo(response))
         .catch((error) => {
+          EventBus.$emit(
+            LicenseEvent.SnackbarFail,
+            `Failed to upload key pair.`
+          );
           console.log(error);
         });
     },
 
     setKeyInfo(res: CreateKeyResponse) {
-      this.keyID = res.key_id;
+      this.keyID = res.keyId;
       this.publicKey = res.key;
     },
 
     uploadFile() {
-      if (this.chosenFile === null) {
+      if (this.chosenFile === null || this.systemID === '') {
         return;
       }
       let formData = new FormData();
       formData.append('config', this.chosenFile);
-      formData.append('system', this.snumbers.toString());
-      formData.append('sv', this.selfVerify ? 'true' : 'false');
-      formData.append('cd', this.coverDetection ? 'true' : 'false');
-      formData.append('av', this.analogValue ? 'true' : 'false');
+      formData.append('id', this.systemID);
+      formData.append('psn', this.snumbers.toString());
 
       uploadASConfig(formData)
         .then((response) => {
-          this.systemID = response.systemId;
+          this.featureSystemID = response.systemId;
         })
         .catch((error) => {
+          EventBus.$emit(
+            LicenseEvent.SnackbarError,
+            `Error during upload file.`
+          );
           console.log(error);
         });
     },
@@ -333,6 +419,10 @@ export default Vue.extend({
       for (let i = 0; i < this.snumbers.length; i++) {
         Vue.set(this.snumbers, i, makeSN(16));
       }
+    },
+
+    generateSystemID() {
+      this.systemID = generateUUID();
     },
 
     addPSN() {
@@ -345,14 +435,49 @@ export default Vue.extend({
       }
     },
 
+    deleteSystem() {
+      if (this.systemID === '') {
+        return;
+      }
+      deleteAutroSafeSystem(this.systemID)
+        .then((response) => {
+          this.systemID = '';
+          EventBus.$emit(
+            LicenseEvent.SnackbarSuccess,
+            `System has been delete from db.`
+          );
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    setSystemFeatures() {
+      const data: SetAutroSafeFeaturesRequest = {
+        systemId: this.featureSystemID,
+        demo: this.demo,
+        selfVerify: this.selfVerify,
+        coverDetection: this.coverDetection,
+        analogValue: this.analogValue,
+      };
+      updateAutroSafeFeatures(data)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
     signSystemConfig() {
       const data: SignAutroSafeLicenseRequest = {
         keyId: this.keyID,
-        systemId: this.systemID,
+        systemId: this.featureSystemID,
       };
       signAutroSafeLicense(data)
         .then((response) => this.setSignedSystem(response))
         .catch((error) => {
+          EventBus.$emit(LicenseEvent.SnackbarFail, `Failed to sign license.`);
           console.log(error);
         });
     },
@@ -361,6 +486,10 @@ export default Vue.extend({
       downloadASConfig(this.signedSystemID)
         .then((response) => console.log('download'))
         .catch((error) => {
+          EventBus.$emit(
+            LicenseEvent.SnackbarFail,
+            `Failed to download config file.`
+          );
           console.log(error);
         });
     },
@@ -381,6 +510,7 @@ export default Vue.extend({
       this.canSend = true;
       this.licenseKeys = [];
       this.systemID = '';
+      this.featureSystemID = '';
       this.signedSystemID = '';
       this.keyID = '';
     },
@@ -399,5 +529,9 @@ export default Vue.extend({
   display: flex;
   margin-top: 0px;
   align-items: center;
+}
+
+.tab-item {
+  background-color: #e3f2fd;
 }
 </style>

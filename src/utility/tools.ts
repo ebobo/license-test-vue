@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 export function makeSN(length: number): string {
   let result = '';
   const numbers = '0123456789';
@@ -11,5 +13,10 @@ export function makeSN(length: number): string {
       result += numbers.charAt(Math.floor(Math.random() * numbersLength));
     }
   }
+  return result;
+}
+
+export function generateUUID(): string {
+  const result = uuidv4();
   return result;
 }

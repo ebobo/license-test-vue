@@ -27,7 +27,7 @@ export interface CreateKeyRequest {
 }
 
 export interface CreateKeyResponse {
-  key_id: string;
+  keyId: string;
   description: string;
   key: string;
   created: string;
@@ -54,6 +54,14 @@ export interface ASConfigFile {
 
 export interface CongfigUploadResponse {
   systemId: string;
+}
+
+export interface SetAutroSafeFeaturesRequest {
+  systemId: string;
+  demo: boolean;
+  selfVerify: boolean;
+  coverDetection: boolean;
+  analogValue: boolean;
 }
 
 export async function uploadKeyPair(
@@ -93,7 +101,6 @@ export async function downloadASConfig(systemId: string): Promise<any> {
       responseType: 'blob',
     })
     .then((response) => {
-      console.log(response);
       filename = response.headers['content-type'].split(';')[1];
       return response.data;
     })
@@ -117,9 +124,14 @@ export async function createKeyPair(
       },
     })
     .then((response) => {
-      console.log(response.data);
       return response.data;
     });
+}
+
+export async function getPublicKey(keyId: string): Promise<CreateKeyResponse> {
+  return http.get(`/keys/${keyId}`).then((response) => {
+    return response.data;
+  });
 }
 
 export async function signAutroSafeLicense(
@@ -132,7 +144,25 @@ export async function signAutroSafeLicense(
       },
     })
     .then((response) => {
-      console.log(response.data);
       return response.data;
     });
+}
+
+export async function updateAutroSafeFeatures(
+  data: SetAutroSafeFeaturesRequest
+): Promise<any> {
+  return http
+    .put<SetAutroSafeFeaturesRequest>(
+      `/autrosafe/system/features/${data.systemId}`,
+      data
+    )
+    .then((response) => {
+      return response.data;
+    });
+}
+
+export async function deleteAutroSafeSystem(id: string): Promise<void> {
+  return http.delete(`/autrosafe/system/${id}`).then((response) => {
+    return response.data;
+  });
 }

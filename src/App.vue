@@ -22,10 +22,24 @@
         width="40"
       />
     </v-app-bar>
-    <v-main>
+
+    <v-snackbar
+      class="snackbar"
+      :color="snackbarColor"
+      v-model="snackbar"
+      auto-height
+      top
+    >
+      <v-icon class="pr-3" dark large>{{ snackbarIcon }}</v-icon>
+      {{ snackbarText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn text v-bind="attrs" @click="snackbar = false">Close</v-btn>
+      </template>
+    </v-snackbar>
+
+    <v-main class="main-view">
       <router-view />
     </v-main>
-
     <v-footer fixed color="primary" dark>
       <h4 class="ml-2">{{ slogan }}</h4>
       <v-spacer></v-spacer>
@@ -45,12 +59,59 @@
 <script lang="ts">
 import Vue from 'vue';
 import AuthNav from '@/components/AuthNav.vue';
+import { EventBus, LicenseEvent } from '@/utility/eventBus';
 
 export default Vue.extend({
   name: 'App',
+  created() {
+    EventBus.$on(LicenseEvent.SnackbarError, this.handleSnackbarError);
+    EventBus.$on(LicenseEvent.SnackbarFail, this.handleSnackbarFail);
+    EventBus.$on(LicenseEvent.SnackbarNormal, this.handleSnackbarNormal);
+    EventBus.$on(LicenseEvent.SnackbarSuccess, this.handleSnackbarSuccess);
+  },
   components: { AuthNav },
   data: () => ({
     slogan: process.env.VUE_APP_SLOGAN,
+    snackbar: false,
+    snackbarText: '',
+    snackbarColor: 'grey darken-4',
+    snackbarIcon: 'mdi-information-outline',
   }),
+  methods: {
+    handleSnackbarError(snackbarText = '') {
+      this.snackbarText = snackbarText;
+      this.snackbarColor = 'red darken-1';
+      this.snackbarIcon = 'mdi-alert-circle-outline';
+      this.snackbar = true;
+    },
+    handleSnackbarFail(snackbarText = '') {
+      this.snackbarText = snackbarText;
+      this.snackbarColor = 'orange darken-4';
+      this.snackbarIcon = 'mdi-alert-outline';
+      this.snackbar = true;
+    },
+    handleSnackbarNormal(snackbarText = '') {
+      this.snackbarText = snackbarText;
+      this.snackbarColor = 'grey darken-4';
+      this.snackbarIcon = 'mdi-information-outline';
+      this.snackbar = true;
+    },
+    handleSnackbarSuccess(snackbarText = '') {
+      this.snackbarText = snackbarText;
+      this.snackbarColor = 'green darken-1';
+      this.snackbarIcon = 'mdi-check-circle-outline';
+      this.snackbar = true;
+    },
+  },
 });
 </script>
+
+<style lang="scss" scoped>
+.main-view {
+  background-color: #e3f2fd;
+}
+
+.snackbar {
+  margin-top: 50px;
+}
+</style>
