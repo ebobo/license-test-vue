@@ -187,12 +187,12 @@
         <v-img src="@/assets/images/document_gear_icon_blue.png"> </v-img>
       </v-list-item-avatar>
 
-      <v-row justify="center">
+      <v-row justify="center" class="mini-row">
         <v-col cols="2">
           <v-checkbox v-model="demo" label="Demo"></v-checkbox>
         </v-col>
         <v-col cols="2">
-          <v-checkbox v-model="selfVerify" label="Self-Verify"></v-checkbox>
+          <v-checkbox v-model="selfVerify" label="Self Verify"></v-checkbox>
         </v-col>
         <v-col cols="2">
           <v-checkbox
@@ -202,8 +202,29 @@
         </v-col>
         <v-col cols="2">
           <v-checkbox v-model="analogValue" label="Analog Values"></v-checkbox>
+        </v-col> </v-row
+      >\
+      <v-row justify="center" class="mt-0">
+        <v-col cols="2">
+          <v-checkbox
+            v-model="opticalIntegrity"
+            label="Optical Integrity"
+          ></v-checkbox>
+        </v-col>
+        <v-col cols="3">
+          <v-checkbox
+            v-model="requireSignedConfiguration"
+            label="Require Signed Configurations"
+          ></v-checkbox>
+        </v-col>
+        <v-col cols="3">
+          <v-checkbox
+            v-model="allowDowngrades"
+            label="Allow Downgrades"
+          ></v-checkbox>
         </v-col>
       </v-row>
+
       <v-row justify="center">
         <v-col cols="6">
           <v-text-field
@@ -311,7 +332,10 @@ export default Vue.extend({
     demo: boolean;
     selfVerify: boolean;
     coverDetection: boolean;
+    opticalIntegrity: boolean;
     analogValue: boolean;
+    requireSignedConfiguration: boolean;
+    allowDowngrades: boolean;
     canSend: boolean;
     systemID: string;
     featureSystemID: string;
@@ -329,7 +353,10 @@ export default Vue.extend({
       demo: false,
       selfVerify: false,
       coverDetection: false,
+      opticalIntegrity: false,
       analogValue: false,
+      requireSignedConfiguration: false,
+      allowDowngrades: false,
       canSend: true,
       systemID: '',
       featureSystemID: '',
@@ -525,7 +552,10 @@ export default Vue.extend({
       this.demo = false;
       this.selfVerify = false;
       this.coverDetection = false;
+      this.opticalIntegrity = false;
       this.analogValue = false;
+      this.requireSignedConfiguration = false;
+      this.allowDowngrades = false;
       this.snumbers = ['00A7000730980000'];
       this.canSend = true;
       this.licenseKeys = [];
@@ -543,7 +573,10 @@ export default Vue.extend({
       this.demo = false;
       this.selfVerify = false;
       this.coverDetection = false;
+      this.opticalIntegrity = false;
       this.analogValue = false;
+      this.requireSignedConfiguration = false;
+      this.allowDowngrades = false;
       this.snumbers = ['00A7000730980000'];
       this.canSend = true;
       this.licenseKeys = [];
@@ -572,5 +605,9 @@ export default Vue.extend({
 
 .tab-item {
   background-color: #e3f2fd;
+}
+
+.mini-row {
+  height: 40px;
 }
 </style>
