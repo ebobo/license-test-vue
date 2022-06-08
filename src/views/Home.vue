@@ -175,10 +175,12 @@
         </v-col>
         <v-col cols="2" class="upload-btn" justify="center">
           <v-btn
+            :loading="uploading"
             :disabled="systemID === '' || chosenFile === null"
             @click="uploadFile"
-            >upload config</v-btn
-          >
+            >upload config
+            <v-icon right dark> mdi-cloud-upload </v-icon>
+          </v-btn>
         </v-col>
       </v-row>
       <v-list-item-avatar class="ma-2" size="48" rounded="0">
@@ -315,6 +317,7 @@ export default Vue.extend({
     featureSystemID: string;
     signedSystemID: string;
     licenseKeys: string[];
+    uploading: boolean;
   } {
     return {
       keyID: '',
@@ -332,6 +335,7 @@ export default Vue.extend({
       featureSystemID: '',
       signedSystemID: '',
       licenseKeys: [],
+      uploading: false,
     };
   },
 
@@ -397,6 +401,7 @@ export default Vue.extend({
       if (this.chosenFile === null || this.systemID === '') {
         return;
       }
+      this.uploading = true;
       let formData = new FormData();
       formData.append('config', this.chosenFile);
       formData.append('id', this.systemID);
@@ -405,6 +410,7 @@ export default Vue.extend({
       uploadASConfig(formData)
         .then((response) => {
           this.featureSystemID = response.systemId;
+          this.uploading = false;
         })
         .catch((error) => {
           EventBus.$emit(
@@ -412,6 +418,7 @@ export default Vue.extend({
             `Error during upload file.`
           );
           console.log(error);
+          this.uploading = false;
         });
     },
 
@@ -461,11 +468,17 @@ export default Vue.extend({
         analogValue: this.analogValue,
       };
       updateAutroSafeFeatures(data)
-        .then((response) => {
-          console.log(response);
+        .then(() => {
+          EventBus.$emit(
+            LicenseEvent.SnackbarSuccess,
+            `System features been set.`
+          );
         })
         .catch((error) => {
-          console.log(error);
+          EventBus.$emit(
+            LicenseEvent.SnackbarFail,
+            `Failed to set system features.`
+          );
         });
     },
 
@@ -475,16 +488,25 @@ export default Vue.extend({
         systemId: this.featureSystemID,
       };
       signAutroSafeLicense(data)
-        .then((response) => this.setSignedSystem(response))
+        .then((response) => {
+          this.setSignedSystem(response);
+          EventBus.$emit(
+            LicenseEvent.SnackbarSuccess,
+            `Config has been signed.`
+          );
+        })
         .catch((error) => {
-          EventBus.$emit(LicenseEvent.SnackbarFail, `Failed to sign license.`);
+          EventBus.$emit(LicenseEvent.SnackbarFail, `Failed to sign license`);
           console.log(error);
         });
     },
 
     downloadConfig() {
       downloadASConfig(this.signedSystemID)
-        .then((response) => console.log('download'))
+        .then(() => {
+          console.log('download');
+          this.clearUpload();
+        })
         .catch((error) => {
           EventBus.$emit(
             LicenseEvent.SnackbarFail,
@@ -498,11 +520,27 @@ export default Vue.extend({
       this.signedSystemID = res.systemId;
     },
 
+    clearUpload() {
+      this.chosenFile = null;
+      this.demo = false;
+      this.selfVerify = false;
+      this.coverDetection = false;
+      this.analogValue = false;
+      this.snumbers = ['00A7000730980000'];
+      this.canSend = true;
+      this.licenseKeys = [];
+      this.systemID = '';
+      this.featureSystemID = '';
+      this.signedSystemID = '';
+      this.uploading = false;
+    },
+
     clearSelection() {
       this.chosenFile = null;
       this.privateKeyFile = null;
       this.publicKeyFile = null;
       this.publicKey = '';
+      this.demo = false;
       this.selfVerify = false;
       this.coverDetection = false;
       this.analogValue = false;
@@ -513,6 +551,7 @@ export default Vue.extend({
       this.featureSystemID = '';
       this.signedSystemID = '';
       this.keyID = '';
+      this.uploading = false;
     },
   },
 });
