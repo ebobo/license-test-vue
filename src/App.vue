@@ -2,6 +2,14 @@
   <v-app>
     <v-app-bar app color="primary" dark>
       <div class="d-flex align-center">
+        <v-img
+          alt="Autronica Logo"
+          class="shrink mr-2"
+          contain
+          src="./assets/images/autronica_logo.png"
+          transition="scale-transition"
+          width="70"
+        />
         <h3 class="ml-2">License - Tester</h3>
       </div>
       <v-spacer></v-spacer>
@@ -17,14 +25,6 @@
         <span class="mr-1">About</span>
         <v-icon>mdi-information-outline</v-icon>
       </v-btn>
-      <auth-nav />
-      <img
-        v-if="$auth.isAuthenticated"
-        :src="$auth.user.picture"
-        alt="User's profile picture"
-        class="nav-user-profile rounded-circle mr-1"
-        width="40"
-      />
     </v-app-bar>
 
     <v-snackbar
@@ -44,6 +44,7 @@
     <v-main class="main-view">
       <router-view />
     </v-main>
+
     <v-footer fixed color="primary" dark>
       <h4 class="ml-2">{{ slogan }}</h4>
       <v-spacer></v-spacer>
@@ -62,7 +63,6 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import AuthNav from '@/components/AuthNav.vue';
 import { EventBus, LicenseEvent } from '@/utility/eventBus';
 
 export default Vue.extend({
@@ -73,7 +73,6 @@ export default Vue.extend({
     EventBus.$on(LicenseEvent.SnackbarNormal, this.handleSnackbarNormal);
     EventBus.$on(LicenseEvent.SnackbarSuccess, this.handleSnackbarSuccess);
   },
-  components: { AuthNav },
   data: () => ({
     slogan: process.env.VUE_APP_SLOGAN,
     snackbar: false,

@@ -1,301 +1,283 @@
 <template>
   <v-container>
-    <div v-if="$auth.isAuthenticated">
-      <v-list-item-avatar class="ma-1" size="48" rounded="0">
-        <v-img src="@/assets/images/lock_icon.png"> </v-img>
-      </v-list-item-avatar>
+    <v-list-item-avatar class="ma-1" size="48" rounded="0">
+      <v-img src="@/assets/images/lock_icon.png"> </v-img>
+    </v-list-item-avatar>
 
-      <v-row justify="center">
-        <v-col cols="8" class="row-btn" justify="center">
-          <v-tabs fixed-tabs background-color="transparent">
-            <v-tab href="#create"> Create Key </v-tab>
-            <v-tab-item class="tab-item" value="create">
-              <v-row class="mt-2" justify="center">
-                <v-col cols="4" class="row-btn" justify="center">
-                  <v-btn
-                    color="deep-orange lighten-1"
-                    :disabled="keyID === ''"
-                    @click="getKey"
-                    >create key</v-btn
-                  >
-                </v-col>
-                <v-col cols="4" class="row-btn" justify="center">
-                  <v-text-field
-                    prepend-icon="mdi-key-plus"
-                    v-model="keyID"
-                    label="Key ID"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-            </v-tab-item>
-            <v-tab href="#import"> Import Key </v-tab>
-            <v-tab-item class="tab-item" value="import">
-              <v-row class="mt-2" justify="center">
-                <v-col cols="3" class="row-btn" justify="center">
-                  <v-text-field
-                    prepend-icon="mdi-key-plus"
-                    v-model="keyID"
-                    label="Key ID"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="3" justify="center">
-                  <v-file-input
-                    label="Private key file"
-                    v-model="privateKeyFile"
-                    @click:clear="clearSelection"
-                  ></v-file-input>
-                </v-col>
-                <v-col cols="3" justify="center">
-                  <v-file-input
-                    label="Public key file"
-                    v-model="publicKeyFile"
-                    @click:clear="clearSelection"
-                  ></v-file-input>
-                </v-col>
-                <v-col cols="3" class="row-btn" justify="center">
-                  <v-btn
-                    color="deep-orange lighten-1"
-                    :disabled="
-                      publicKeyFile === null ||
-                      privateKeyFile === null ||
-                      keyID === ''
-                    "
-                    @click="uploadKeyPair"
-                    >import key</v-btn
-                  >
-                </v-col>
-              </v-row>
-            </v-tab-item>
-            <v-tab href="#existing"> Existing Key </v-tab>
-            <v-tab-item class="tab-item" value="existing">
-              <v-row class="mt-2" justify="center">
-                <v-col cols="4" class="row-btn" justify="center">
-                  <v-text-field
-                    prepend-icon="mdi-key"
-                    v-model="keyID"
-                    label="Key ID"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="4" class="row-btn">
-                  <v-spacer />
-                  <v-btn
-                    color="deep-orange lighten-1"
-                    :disabled="keyID === ''"
-                    @click="useKey"
-                    >use key</v-btn
-                  >
-                </v-col>
-              </v-row>
-            </v-tab-item>
-          </v-tabs>
-        </v-col>
-      </v-row>
-      <v-row class="mt-2" justify="center">
-        <v-col cols="8" class="row-btn" justify="center">
-          <v-text-field
-            readonly
-            prepend-icon="mdi-key-chain"
-            v-model="publicKey"
-            label="Publick Key (Base64)"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-      <v-list-item-avatar class="ma-2" size="54" rounded="0">
-        <v-img src="@/assets/images/panel_icon.png"> </v-img>
-      </v-list-item-avatar>
+    <v-row justify="center">
+      <v-col cols="8" class="row-btn" justify="center">
+        <v-tabs fixed-tabs background-color="transparent">
+          <v-tab href="#create"> Create Key </v-tab>
+          <v-tab-item class="tab-item" value="create">
+            <v-row class="mt-2" justify="center">
+              <v-col cols="4" class="row-btn" justify="center">
+                <v-btn
+                  color="deep-orange lighten-1"
+                  :disabled="keyID === ''"
+                  @click="getKey"
+                  >create key</v-btn
+                >
+              </v-col>
+              <v-col cols="4" class="row-btn" justify="center">
+                <v-text-field
+                  prepend-icon="mdi-key-plus"
+                  v-model="keyID"
+                  label="Key ID"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-tab-item>
+          <v-tab href="#import"> Import Key </v-tab>
+          <v-tab-item class="tab-item" value="import">
+            <v-row class="mt-2" justify="center">
+              <v-col cols="3" class="row-btn" justify="center">
+                <v-text-field
+                  prepend-icon="mdi-key-plus"
+                  v-model="keyID"
+                  label="Key ID"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="3" justify="center">
+                <v-file-input
+                  label="Private key file"
+                  v-model="privateKeyFile"
+                  @click:clear="clearSelection"
+                ></v-file-input>
+              </v-col>
+              <v-col cols="3" justify="center">
+                <v-file-input
+                  label="Public key file"
+                  v-model="publicKeyFile"
+                  @click:clear="clearSelection"
+                ></v-file-input>
+              </v-col>
+              <v-col cols="3" class="row-btn" justify="center">
+                <v-btn
+                  color="deep-orange lighten-1"
+                  :disabled="
+                    publicKeyFile === null ||
+                    privateKeyFile === null ||
+                    keyID === ''
+                  "
+                  @click="uploadKeyPair"
+                  >import key</v-btn
+                >
+              </v-col>
+            </v-row>
+          </v-tab-item>
+          <v-tab href="#existing"> Existing Key </v-tab>
+          <v-tab-item class="tab-item" value="existing">
+            <v-row class="mt-2" justify="center">
+              <v-col cols="4" class="row-btn" justify="center">
+                <v-text-field
+                  prepend-icon="mdi-key"
+                  v-model="keyID"
+                  label="Key ID"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="4" class="row-btn">
+                <v-spacer />
+                <v-btn
+                  color="deep-orange lighten-1"
+                  :disabled="keyID === ''"
+                  @click="useKey"
+                  >use key</v-btn
+                >
+              </v-col>
+            </v-row>
+          </v-tab-item>
+        </v-tabs>
+      </v-col>
+    </v-row>
+    <v-row class="mt-2" justify="center">
+      <v-col cols="8" class="row-btn" justify="center">
+        <v-text-field
+          readonly
+          prepend-icon="mdi-key-chain"
+          v-model="publicKey"
+          label="Publick Key (Base64)"
+        ></v-text-field>
+      </v-col>
+    </v-row>
+    <v-list-item-avatar class="ma-2" size="54" rounded="0">
+      <v-img src="@/assets/images/panel_icon.png"> </v-img>
+    </v-list-item-avatar>
 
-      <v-row justify="center">
-        <v-col cols="8">
-          <div class="blue--text mb-2">AS config file ( .bz2 )</div>
-          <v-file-input
-            accept=".bz2"
-            label="Click here to select a file"
-            v-model="chosenFile"
-            @click:clear="clearSelection"
-          ></v-file-input>
-        </v-col>
-      </v-row>
-      <v-row justify="center">
-        <v-col cols="5">
-          <v-text-field
-            prepend-icon="mdi-card-account-details-outline"
-            v-model="systemID"
-            label="System ID"
-          ></v-text-field>
-        </v-col>
+    <v-row justify="center">
+      <v-col cols="8">
+        <div class="blue--text mb-2">AS config file ( .bz2 )</div>
+        <v-file-input
+          accept=".bz2"
+          label="Click here to select a file"
+          v-model="chosenFile"
+          @click:clear="clearSelection"
+        ></v-file-input>
+      </v-col>
+    </v-row>
+    <v-row justify="center">
+      <v-col cols="5">
+        <v-text-field
+          prepend-icon="mdi-card-account-details-outline"
+          v-model="systemID"
+          label="System ID"
+        ></v-text-field>
+      </v-col>
 
-        <v-col cols="2" class="row-btn">
-          <v-btn color="light-green darken-3" dark @click="generateSystemID"
-            >generate id</v-btn
-          >
-        </v-col>
-        <v-col cols="1" class="row-btn" justify="center">
-          <v-btn color="red" :disabled="systemID === ''" @click="deleteSystem"
-            >del</v-btn
-          >
-        </v-col>
-      </v-row>
-
-      <v-row v-for="(psn, index) in snumbers" :key="index" justify="center">
-        <v-col cols="8">
-          <v-text-field
-            prepend-icon="mdi-barcode-scan"
-            v-model="snumbers[index]"
-            label="Panel Serial Number"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-      <v-row justify="center">
-        <v-col cols="1" class="upload-btn" justify="center">
-          <v-btn
-            color="green accent-4"
-            dark
-            class="ml-6"
-            small
-            fab
-            @click="addPSN"
-          >
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </v-col>
-        <v-col cols="2" class="upload-btn" justify="center">
-          <v-btn
-            color="red darken-1"
-            dark
-            class="ml-6"
-            small
-            fab
-            @click="removePSN"
-          >
-            <v-icon>mdi-minus</v-icon>
-          </v-btn>
-        </v-col>
-        <v-col cols="2" class="upload-btn" justify="center">
-          <v-btn color="cyan" dark @click="generatePSN">generate psn</v-btn>
-        </v-col>
-        <v-col cols="2" class="upload-btn" justify="center">
-          <v-btn
-            :loading="uploading"
-            :disabled="systemID === '' || chosenFile === null"
-            @click="uploadFile"
-            >upload config
-            <v-icon right dark> mdi-cloud-upload </v-icon>
-          </v-btn>
-        </v-col>
-      </v-row>
-      <v-list-item-avatar class="ma-2" size="48" rounded="0">
-        <v-img src="@/assets/images/document_gear_icon_blue.png"> </v-img>
-      </v-list-item-avatar>
-
-      <v-row justify="center" class="mini-row">
-        <v-col cols="2">
-          <v-checkbox v-model="demo" label="Demo"></v-checkbox>
-        </v-col>
-        <v-col cols="2">
-          <v-checkbox v-model="selfVerify" label="Self Verify"></v-checkbox>
-        </v-col>
-        <v-col cols="2">
-          <v-checkbox
-            v-model="coverDetection"
-            label="Cover Detection"
-          ></v-checkbox>
-        </v-col>
-        <v-col cols="2">
-          <v-checkbox v-model="analogValue" label="Analog Values"></v-checkbox>
-        </v-col> </v-row
-      >\
-      <v-row justify="center" class="mt-0">
-        <v-col cols="2">
-          <v-checkbox
-            v-model="opticalIntegrity"
-            label="Optical Integrity"
-          ></v-checkbox>
-        </v-col>
-        <v-col cols="3">
-          <v-checkbox
-            v-model="requireSignedConfiguration"
-            label="Require Signed Configurations"
-          ></v-checkbox>
-        </v-col>
-        <v-col cols="3">
-          <v-checkbox
-            v-model="allowDowngrades"
-            label="Allow Downgrades"
-          ></v-checkbox>
-        </v-col>
-      </v-row>
-
-      <v-row justify="center">
-        <v-col cols="6">
-          <v-text-field
-            readonly
-            prepend-icon="mdi-card-account-details-outline"
-            v-model="featureSystemID"
-            label="System ID"
-          ></v-text-field>
-        </v-col>
-
-        <v-col cols="2" class="row-btn">
-          <v-btn
-            color="purple lighten-1"
-            :disabled="featureSystemID === ''"
-            @click="setSystemFeatures"
-            >Set features</v-btn
-          >
-        </v-col>
-      </v-row>
-
-      <v-row justify="center">
-        <v-col cols="2">
-          <v-btn class="mt-3" color="amber" @click="clearSelection"
-            >RESET</v-btn
-          >
-        </v-col>
-        <v-col cols="3">
-          <v-btn
-            class="mt-3"
-            color="indigo lighten-2"
-            :disabled="featureSystemID === ''"
-            @click="signSystemConfig"
-            >Sign System Config</v-btn
-          >
-        </v-col>
-        <v-col cols="3">
-          <v-btn
-            class="mt-3"
-            color="success"
-            :disabled="signedSystemID === ''"
-            @click="downloadConfig"
-            >Download Signed Config</v-btn
-          >
-        </v-col>
-      </v-row>
-      <v-row v-for="(_, index) in licenseKeys" :key="index" justify="center">
-        <v-col cols="10">
-          <v-text-field
-            readonly
-            prepend-icon="mdi-file-sign"
-            v-model="licenseKeys[index]"
-            label="License Key"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-      <v-row class="mb-10" justify="center"> </v-row>
-    </div>
-    <div v-if="!$auth.isAuthenticated">
-      <v-row class="mt-4" justify="center">
-        <v-alert
-          color="primary"
-          dark
-          icon="mdi-account-outline"
-          border="left"
-          prominent
+      <v-col cols="2" class="row-btn">
+        <v-btn color="light-green darken-3" dark @click="generateSystemID"
+          >generate id</v-btn
         >
-          Please log in with your username and password to use the autronica
-          license service
-        </v-alert>
-      </v-row>
-    </div>
+      </v-col>
+      <v-col cols="1" class="row-btn" justify="center">
+        <v-btn color="red" :disabled="systemID === ''" @click="deleteSystem"
+          >del</v-btn
+        >
+      </v-col>
+    </v-row>
+
+    <v-row v-for="(psn, index) in snumbers" :key="index" justify="center">
+      <v-col cols="8">
+        <v-text-field
+          prepend-icon="mdi-barcode-scan"
+          v-model="snumbers[index]"
+          label="Panel Serial Number"
+        ></v-text-field>
+      </v-col>
+    </v-row>
+    <v-row justify="center">
+      <v-col cols="1" class="upload-btn" justify="center">
+        <v-btn
+          color="green accent-4"
+          dark
+          class="ml-6"
+          small
+          fab
+          @click="addPSN"
+        >
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </v-col>
+      <v-col cols="2" class="upload-btn" justify="center">
+        <v-btn
+          color="red darken-1"
+          dark
+          class="ml-6"
+          small
+          fab
+          @click="removePSN"
+        >
+          <v-icon>mdi-minus</v-icon>
+        </v-btn>
+      </v-col>
+      <v-col cols="2" class="upload-btn" justify="center">
+        <v-btn color="cyan" dark @click="generatePSN">generate psn</v-btn>
+      </v-col>
+      <v-col cols="2" class="upload-btn" justify="center">
+        <v-btn
+          :loading="uploading"
+          :disabled="systemID === '' || chosenFile === null"
+          @click="uploadFile"
+          >upload config
+          <v-icon right dark> mdi-cloud-upload </v-icon>
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-list-item-avatar class="ma-2" size="48" rounded="0">
+      <v-img src="@/assets/images/document_gear_icon_blue.png"> </v-img>
+    </v-list-item-avatar>
+
+    <v-row justify="center" class="mini-row">
+      <v-col cols="2">
+        <v-checkbox v-model="demo" label="Demo"></v-checkbox>
+      </v-col>
+      <v-col cols="2">
+        <v-checkbox v-model="selfVerify" label="Self Verify"></v-checkbox>
+      </v-col>
+      <v-col cols="2">
+        <v-checkbox
+          v-model="coverDetection"
+          label="Cover Detection"
+        ></v-checkbox>
+      </v-col>
+      <v-col cols="2">
+        <v-checkbox v-model="analogValue" label="Analog Values"></v-checkbox>
+      </v-col>
+    </v-row>
+    <v-row justify="center" class="mt-0">
+      <v-col cols="2">
+        <v-checkbox
+          v-model="opticalIntegrity"
+          label="Optical Integrity"
+        ></v-checkbox>
+      </v-col>
+      <v-col cols="3">
+        <v-checkbox
+          v-model="requireSignedConfiguration"
+          label="Require Signed Configurations"
+        ></v-checkbox>
+      </v-col>
+      <v-col cols="3">
+        <v-checkbox
+          v-model="allowDowngrades"
+          label="Allow Downgrades"
+        ></v-checkbox>
+      </v-col>
+    </v-row>
+
+    <v-row justify="center">
+      <v-col cols="6">
+        <v-text-field
+          readonly
+          prepend-icon="mdi-card-account-details-outline"
+          v-model="featureSystemID"
+          label="System ID"
+        ></v-text-field>
+      </v-col>
+
+      <v-col cols="2" class="row-btn">
+        <v-btn
+          color="purple lighten-1"
+          :disabled="featureSystemID === ''"
+          @click="setSystemFeatures"
+          >Set features</v-btn
+        >
+      </v-col>
+    </v-row>
+
+    <v-row justify="center">
+      <v-col cols="2">
+        <v-btn class="mt-3" color="amber" @click="clearSelection">RESET</v-btn>
+      </v-col>
+      <v-col cols="3">
+        <v-btn
+          class="mt-3"
+          color="indigo lighten-2"
+          :disabled="featureSystemID === ''"
+          @click="signSystemConfig"
+          >Sign System Config</v-btn
+        >
+      </v-col>
+      <v-col cols="3">
+        <v-btn
+          class="mt-3"
+          color="success"
+          :disabled="signedSystemID === ''"
+          @click="downloadConfig"
+          >Download Signed Config</v-btn
+        >
+      </v-col>
+    </v-row>
+    <v-row v-for="(_, index) in licenseKeys" :key="index" justify="center">
+      <v-col cols="10">
+        <v-text-field
+          readonly
+          prepend-icon="mdi-file-sign"
+          v-model="licenseKeys[index]"
+          label="License Key"
+        ></v-text-field>
+      </v-col>
+    </v-row>
+    <v-row class="mb-10" justify="center"> </v-row>
   </v-container>
 </template>
 
@@ -318,7 +300,6 @@ import {
 } from '../service/rest';
 import { makeSN, generateUUID } from '@/utility/tools';
 import { EventBus, LicenseEvent } from '@/utility/eventBus';
-import { useAuth0 } from '@/auth/auth0-plugin';
 
 export default Vue.extend({
   name: 'Asconfig',
@@ -428,12 +409,12 @@ export default Vue.extend({
       if (this.chosenFile === null || this.systemID === '') {
         return;
       }
-      this.uploading = true;
       let formData = new FormData();
       formData.append('config', this.chosenFile);
       formData.append('id', this.systemID);
       formData.append('psn', this.snumbers.toString());
 
+      this.uploading = true;
       uploadASConfig(formData)
         .then((response) => {
           this.featureSystemID = response.systemId;
@@ -444,8 +425,8 @@ export default Vue.extend({
             LicenseEvent.SnackbarError,
             `Error during upload file.`
           );
-          console.log(error);
           this.uploading = false;
+          console.log(error);
         });
     },
 
@@ -475,6 +456,7 @@ export default Vue.extend({
       }
       deleteAutroSafeSystem(this.systemID)
         .then((response) => {
+          console.log(response);
           this.systemID = '';
           EventBus.$emit(
             LicenseEvent.SnackbarSuccess,
@@ -497,7 +479,6 @@ export default Vue.extend({
         requireSignedConfig: this.requireSignedConfiguration,
         allowDowngrades: this.allowDowngrades,
       };
-      console.log(data);
       updateAutroSafeFeatures(data)
         .then(() => {
           EventBus.$emit(
@@ -535,7 +516,6 @@ export default Vue.extend({
     downloadConfig() {
       downloadASConfig(this.signedSystemID)
         .then(() => {
-          console.log('download');
           this.clearUpload();
         })
         .catch((error) => {
