@@ -321,7 +321,7 @@ import { EventBus, LicenseEvent } from '@/utility/eventBus';
 import { useAuth0 } from '@/auth/auth0-plugin';
 
 export default Vue.extend({
-  name: 'Home',
+  name: 'Asconfig',
   data(): {
     keyID: string;
     publicKey: string;
@@ -492,8 +492,12 @@ export default Vue.extend({
         demo: this.demo,
         selfVerify: this.selfVerify,
         coverDetection: this.coverDetection,
+        opticalIntegrity: this.opticalIntegrity,
         analogValue: this.analogValue,
+        requireSignedConfig: this.requireSignedConfiguration,
+        allowDowngrades: this.allowDowngrades,
       };
+      console.log(data);
       updateAutroSafeFeatures(data)
         .then(() => {
           EventBus.$emit(

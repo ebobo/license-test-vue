@@ -61,7 +61,10 @@ export interface SetAutroSafeFeaturesRequest {
   demo: boolean;
   selfVerify: boolean;
   coverDetection: boolean;
+  opticalIntegrity: boolean;
   analogValue: boolean;
+  requireSignedConfig: boolean;
+  allowDowngrades: boolean;
 }
 
 export async function uploadKeyPair(

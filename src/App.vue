@@ -6,7 +6,11 @@
       </div>
       <v-spacer></v-spacer>
       <v-btn :to="{ path: '/' }" text>
-        <span class="mr-1">Main</span>
+        <span class="mr-1">AS-conf</span>
+        <v-icon>mdi-ballot-outline</v-icon>
+      </v-btn>
+      <v-btn :to="{ path: '/asfw' }" text>
+        <span class="mr-1">AS-FW</span>
         <v-icon>mdi-file-upload-outline</v-icon>
       </v-btn>
       <v-btn :to="{ path: '/about' }" text>
