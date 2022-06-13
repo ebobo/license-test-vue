@@ -97,6 +97,22 @@ export async function uploadASConfig(
     });
 }
 
+export async function uploadAndSignASConfig(
+  data: FormData
+): Promise<CongfigUploadResponse> {
+  return http
+    .post<CongfigUploadResponse>(`/asconfig`, data, {
+      headers: {
+        Authentication: process.env.VUE_APP_SERVER_SECRET,
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    .then((response) => {
+      console.log(response.data);
+      return response.data;
+    });
+}
+
 export async function downloadASConfig(systemId: string): Promise<any> {
   let filename: string;
   return http

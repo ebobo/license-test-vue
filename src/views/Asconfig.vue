@@ -172,12 +172,12 @@
       <v-col cols="2" class="upload-btn" justify="center">
         <v-btn color="cyan" dark @click="generatePSN">generate psn</v-btn>
       </v-col>
-      <v-col cols="2" class="upload-btn" justify="center">
+      <v-col cols="3" class="upload-btn" justify="center">
         <v-btn
           :loading="uploading"
           :disabled="systemID === '' || chosenFile === null"
-          @click="uploadFile"
-          >upload config
+          @click="uploadAndSign"
+          >upload config and sign
           <v-icon right dark> mdi-cloud-upload </v-icon>
         </v-btn>
       </v-col>
@@ -245,25 +245,17 @@
     </v-row>
 
     <v-row justify="center">
-      <v-col cols="2">
+      <v-col cols="5">
         <v-btn class="mt-3" color="amber" @click="clearSelection">RESET</v-btn>
       </v-col>
-      <v-col cols="3">
-        <v-btn
-          class="mt-3"
-          color="indigo lighten-2"
-          :disabled="featureSystemID === ''"
-          @click="signSystemConfig"
-          >Sign System Config</v-btn
-        >
-      </v-col>
+
       <v-col cols="3">
         <v-btn
           class="mt-3"
           color="success"
           :disabled="signedSystemID === ''"
           @click="downloadConfig"
-          >Download Signed Config</v-btn
+          >Download Signed-Config</v-btn
         >
       </v-col>
     </v-row>
@@ -292,6 +284,7 @@ import {
   createKeyPair,
   getPublicKey,
   uploadASConfig,
+  uploadAndSignASConfig,
   uploadKeyPair,
   updateAutroSafeFeatures,
   downloadASConfig,
@@ -416,6 +409,32 @@ export default Vue.extend({
 
       this.uploading = true;
       uploadASConfig(formData)
+        .then((response) => {
+          this.featureSystemID = response.systemId;
+          this.uploading = false;
+        })
+        .catch((error) => {
+          EventBus.$emit(
+            LicenseEvent.SnackbarError,
+            `Error during upload file.`
+          );
+          this.uploading = false;
+          console.log(error);
+        });
+    },
+
+    uploadAndSign() {
+      if (this.chosenFile === null || this.systemID === '') {
+        return;
+      }
+      let formData = new FormData();
+      formData.append('configuration', this.chosenFile);
+      formData.append('systemId', this.systemID);
+      formData.append('panelSerialNumbers', this.snumbers.toString());
+      formData.append('apiPath', 'http://localhost:8088/config');
+
+      this.uploading = true;
+      uploadAndSignASConfig(formData)
         .then((response) => {
           this.featureSystemID = response.systemId;
           this.uploading = false;
