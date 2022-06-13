@@ -267,16 +267,6 @@
         >
       </v-col>
     </v-row>
-    <v-row v-for="(_, index) in licenseKeys" :key="index" justify="center">
-      <v-col cols="10">
-        <v-text-field
-          readonly
-          prepend-icon="mdi-file-sign"
-          v-model="licenseKeys[index]"
-          label="License Key"
-        ></v-text-field>
-      </v-col>
-    </v-row>
     <v-row class="mb-10" justify="center"> </v-row>
   </v-container>
 </template>
@@ -321,7 +311,6 @@ export default Vue.extend({
     systemID: string;
     featureSystemID: string;
     signedSystemID: string;
-    licenseKeys: string[];
     uploading: boolean;
   } {
     return {
@@ -342,7 +331,6 @@ export default Vue.extend({
       systemID: '',
       featureSystemID: '',
       signedSystemID: '',
-      licenseKeys: [],
       uploading: false,
     };
   },
@@ -542,7 +530,6 @@ export default Vue.extend({
       this.allowDowngrades = false;
       this.snumbers = ['00A7000730980000'];
       this.canSend = true;
-      this.licenseKeys = [];
       this.systemID = '';
       this.featureSystemID = '';
       this.signedSystemID = '';
@@ -563,7 +550,6 @@ export default Vue.extend({
       this.allowDowngrades = false;
       this.snumbers = ['00A7000730980000'];
       this.canSend = true;
-      this.licenseKeys = [];
       this.systemID = '';
       this.featureSystemID = '';
       this.signedSystemID = '';
