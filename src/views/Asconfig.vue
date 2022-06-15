@@ -117,9 +117,11 @@
     <v-row justify="center">
       <v-col cols="5">
         <v-text-field
+          :append-icon="systemID === '' ? '' : 'mdi-content-copy'"
           prepend-icon="mdi-card-account-details-outline"
           v-model="systemID"
           label="System ID"
+          @click:append="copySystemId"
         ></v-text-field>
       </v-col>
 
@@ -129,8 +131,8 @@
         >
       </v-col>
       <v-col cols="1" class="row-btn" justify="center">
-        <v-btn color="red" :disabled="systemID === ''" @click="deleteSystem"
-          >del</v-btn
+        <v-btn color="red" :disabled="systemID === ''" @click="deleteSystem">
+          <v-icon> mdi-trash-can </v-icon></v-btn
         >
       </v-col>
     </v-row>
@@ -474,7 +476,7 @@ export default Vue.extend({
             `System features been set.`
           );
         })
-        .catch((error) => {
+        .catch(() => {
           EventBus.$emit(
             LicenseEvent.SnackbarFail,
             `Failed to set system features.`
@@ -513,6 +515,14 @@ export default Vue.extend({
           );
           console.log(error);
         });
+    },
+
+    async copySystemId() {
+      await navigator.clipboard.writeText(this.systemID);
+      EventBus.$emit(
+        LicenseEvent.SnackbarNormal,
+        `sysstem ID has been copied.`
+      );
     },
 
     setSignedSystem(res: SignAutroSafeLicenseResponse) {

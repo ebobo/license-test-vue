@@ -195,12 +195,20 @@
     </v-row>
     <v-row justify="center">
       <v-col cols="2">
-        <v-btn color="amber" @click="clearSelection">RESET ALL</v-btn>
+        <v-btn class="mt-3" color="amber" @click="clearSelection"
+          >RESET ALL</v-btn
+        >
       </v-col>
       <v-col cols="4">
         <v-btn
+          class="mt-3"
           :loading="uploading"
-          :disabled="systemID === '' || chosenFile === null"
+          :disabled="
+            systemID === '' ||
+            ccFile === null ||
+            nmFile === null ||
+            smFile === null
+          "
           @click="uploadFile"
           >upload and sign firmware files
           <v-icon right dark> mdi-cloud-upload </v-icon>
@@ -208,9 +216,10 @@
       </v-col>
       <v-col cols="2">
         <v-btn
+          class="mt-3"
           color="success"
           :disabled="signedSystemID === ''"
-          @click="downloadConfig"
+          @click="downloadFirmwareSignature"
           >Download License</v-btn
         >
       </v-col>
@@ -226,14 +235,12 @@ import Vue from 'vue';
 import {
   CreateKeyRequest,
   CreateKeyResponse,
-  SignAutroSafeLicenseRequest,
   SignAutroSafeLicenseResponse,
   createKeyPair,
   getPublicKey,
-  uploadASConfig,
+  uploadASFirmware,
   uploadKeyPair,
-  downloadASConfig,
-  signAutroSafeLicense,
+  downloadASFirmwareSignature,
 } from '../service/rest';
 import { generateUUID } from '@/utility/tools';
 import { EventBus, LicenseEvent } from '@/utility/eventBus';
@@ -251,7 +258,6 @@ export default Vue.extend({
     publicKeyFile: File | null;
     canSend: boolean;
     systemID: string;
-    featureSystemID: string;
     signedSystemID: string;
     licenseKeys: string[];
     uploading: boolean;
@@ -267,7 +273,6 @@ export default Vue.extend({
       publicKeyFile: null,
       canSend: true,
       systemID: '',
-      featureSystemID: '',
       signedSystemID: '',
       licenseKeys: [],
       uploading: false,
@@ -337,7 +342,9 @@ export default Vue.extend({
         this.ccFile === null ||
         this.nmFile === null ||
         this.smFile === null ||
-        this.systemID === ''
+        this.versionFile === null ||
+        this.systemID === '' ||
+        this.keyID === ''
       ) {
         return;
       }
@@ -345,13 +352,19 @@ export default Vue.extend({
       formData.append('computerController', this.ccFile);
       formData.append('networkMonitor', this.nmFile);
       formData.append('systemMonitor', this.smFile);
+      formData.append('version', this.versionFile);
       formData.append('systemId', this.systemID);
+      formData.append('keyId', this.keyID);
 
       this.uploading = true;
-      uploadASConfig(formData)
+      uploadASFirmware(formData)
         .then((response) => {
-          this.featureSystemID = response.systemId;
+          this.signedSystemID = response.systemId;
           this.uploading = false;
+          EventBus.$emit(
+            LicenseEvent.SnackbarSuccess,
+            `Firmware has been uploaded and signed.`
+          );
         })
         .catch((error) => {
           EventBus.$emit(
@@ -371,27 +384,8 @@ export default Vue.extend({
       this.systemID = '';
     },
 
-    signSystemConfig() {
-      const data: SignAutroSafeLicenseRequest = {
-        keyId: this.keyID,
-        systemId: this.featureSystemID,
-      };
-      signAutroSafeLicense(data)
-        .then((response) => {
-          this.setSignedSystem(response);
-          EventBus.$emit(
-            LicenseEvent.SnackbarSuccess,
-            `Config has been signed.`
-          );
-        })
-        .catch((error) => {
-          EventBus.$emit(LicenseEvent.SnackbarFail, `Failed to sign license`);
-          console.log(error);
-        });
-    },
-
-    downloadConfig() {
-      downloadASConfig(this.signedSystemID)
+    downloadFirmwareSignature() {
+      downloadASFirmwareSignature(this.signedSystemID)
         .then(() => {
           this.clearUpload();
         })
@@ -412,7 +406,6 @@ export default Vue.extend({
       this.canSend = true;
       this.licenseKeys = [];
       this.systemID = '';
-      this.featureSystemID = '';
       this.signedSystemID = '';
       this.uploading = false;
     },
@@ -428,7 +421,6 @@ export default Vue.extend({
       this.canSend = true;
       this.licenseKeys = [];
       this.systemID = '';
-      this.featureSystemID = '';
       this.signedSystemID = '';
       this.keyID = '';
       this.uploading = false;

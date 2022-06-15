@@ -31,6 +31,7 @@
       class="snackbar"
       :color="snackbarColor"
       v-model="snackbar"
+      timeout="2000"
       auto-height
       top
     >
