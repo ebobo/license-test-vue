@@ -254,6 +254,7 @@
         <v-btn
           class="mt-3"
           color="indigo lighten-2"
+          :loading="signing"
           :disabled="featureSystemID === ''"
           @click="signSystemConfig"
           >Sign System Config</v-btn
@@ -314,6 +315,7 @@ export default Vue.extend({
     featureSystemID: string;
     signedSystemID: string;
     uploading: boolean;
+    signing: boolean;
   } {
     return {
       keyID: '',
@@ -334,6 +336,7 @@ export default Vue.extend({
       featureSystemID: '',
       signedSystemID: '',
       uploading: false,
+      signing: false,
     };
   },
 
@@ -409,6 +412,10 @@ export default Vue.extend({
         .then((response) => {
           this.featureSystemID = response.systemId;
           this.uploading = false;
+          EventBus.$emit(
+            LicenseEvent.SnackbarSuccess,
+            `Config has been uploaded.`
+          );
         })
         .catch((error) => {
           EventBus.$emit(
@@ -489,17 +496,19 @@ export default Vue.extend({
         keyId: this.keyID,
         systemId: this.featureSystemID,
       };
+      this.signing = true;
       signAutroSafeLicense(data)
         .then((response) => {
           this.setSignedSystem(response);
+          this.signing = false;
           EventBus.$emit(
             LicenseEvent.SnackbarSuccess,
             `Config has been signed.`
           );
         })
-        .catch((error) => {
+        .catch(() => {
+          this.signing = false;
           EventBus.$emit(LicenseEvent.SnackbarFail, `Failed to sign license`);
-          console.log(error);
         });
     },
 
@@ -544,6 +553,7 @@ export default Vue.extend({
       this.featureSystemID = '';
       this.signedSystemID = '';
       this.uploading = false;
+      this.signing = false;
     },
 
     clearSelection() {
@@ -565,6 +575,7 @@ export default Vue.extend({
       this.signedSystemID = '';
       this.keyID = '';
       this.uploading = false;
+      this.signing = false;
     },
   },
 });
