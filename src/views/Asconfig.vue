@@ -490,13 +490,15 @@ export default Vue.extend({
     setSystemFeatures() {
       const data: SetAutroSafeFeaturesRequest = {
         systemId: this.featureSystemID,
-        demo: this.demo,
-        selfVerify: this.selfVerify,
-        coverDetection: this.coverDetection,
-        opticalIntegrity: this.opticalIntegrity,
-        analogValue: this.analogValue,
-        requireSignedConfig: this.requireSignedConfiguration,
-        allowDowngrades: this.allowDowngrades,
+        autrosafeFeatures: {
+          demo: this.demo,
+          selfVerify: this.selfVerify,
+          coverDetection: this.coverDetection,
+          opticalIntegrity: this.opticalIntegrity,
+          analogValue: this.analogValue,
+          requireSignedConfig: this.requireSignedConfiguration,
+          allowDowngrades: this.allowDowngrades,
+        },
       };
       updateAutroSafeFeatures(data)
         .then(() => {
