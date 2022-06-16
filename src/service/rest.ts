@@ -60,8 +60,7 @@ export interface FirmwareUploadResponse {
   systemId: string;
 }
 
-export interface SetAutroSafeFeaturesRequest {
-  systemId: string;
+export interface AutroSafeFeatures {
   demo: boolean;
   selfVerify: boolean;
   coverDetection: boolean;
@@ -69,6 +68,11 @@ export interface SetAutroSafeFeaturesRequest {
   analogValue: boolean;
   requireSignedConfig: boolean;
   allowDowngrades: boolean;
+}
+
+export interface SetAutroSafeFeaturesRequest {
+  systemId: string;
+  autrosafeFeatures: AutroSafeFeatures;
 }
 
 export async function uploadKeyPair(
