@@ -117,7 +117,6 @@
             accept=".elf"
             label="Click here to select the computer controller .elf file"
             v-model="ccFile"
-            @click:clear="clearSelection"
           ></v-file-input>
         </v-row>
       </v-col>
@@ -134,7 +133,6 @@
             accept=".elf"
             label="Click here to select the network monitor .elf file"
             v-model="nmFile"
-            @click:clear="clearSelection"
           ></v-file-input>
         </v-row>
       </v-col>
@@ -151,7 +149,6 @@
             accept=".elf"
             label="Click here to select the system monitor .elf file"
             v-model="smFile"
-            @click:clear="clearSelection"
           ></v-file-input>
         </v-row>
       </v-col>
@@ -168,7 +165,6 @@
             accept=".version"
             label="Click here to select the autrosafe version .version file"
             v-model="versionFile"
-            @click:clear="clearSelection"
           ></v-file-input>
         </v-row>
       </v-col>
