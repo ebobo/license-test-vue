@@ -21,6 +21,10 @@
         <span class="mr-1">AS-FW</span>
         <v-icon>mdi-file-upload-outline</v-icon>
       </v-btn>
+      <v-btn :to="{ path: '/certificate' }" text>
+        <span class="mr-1">Cert</span>
+        <v-icon>mdi-certificate-outline</v-icon>
+      </v-btn>
       <v-btn :to="{ path: '/about' }" text>
         <span class="mr-1">About</span>
         <v-icon>mdi-information-outline</v-icon>
